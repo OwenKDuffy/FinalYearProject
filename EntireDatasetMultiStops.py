@@ -6,7 +6,7 @@ directory_in_str = os.getcwd() + '/Datasets'
 print(directory_in_str)
 directory = os.fsencode(directory_in_str)
 directory = os.listdir(directory)
-print(directory[0])
+# print(directory[0])
 for file in directory:
     filename = directory_in_str + '/' + file.decode("utf-8")
     print("Calling on: " + filename)

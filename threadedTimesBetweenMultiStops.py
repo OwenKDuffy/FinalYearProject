@@ -6,6 +6,66 @@ import math
 import sys
 debug = False
 # In[9]:
+def main(argv):
+    # #Timestamp micro since 1970 01 01 00:00:00 GMT',
+    # 'Line ID',
+    # 'Direction',
+    # 'Journey Pattern ID',
+    # 'Time Frame (The start date of the production time table - in Dublin the production time table starts at 6am and ends at 3am),
+    # 'Vehicle Journey ID (A given run on the journey pattern)'Operator (Bus operator, not the driver),
+    # 'Congestion [0=no,1=yes]',
+    # 'Lon WGS84',
+    # 'Lat WGS84',
+    # 'Delay (seconds, negative if bus is ahead of schedule),
+    # 'Block ID (a section ID of the journey pattern),
+    # 'Vehicle ID',
+    # 'Stop ID',
+    # 'At Stop [0=no,1=yes]
+    inputFile = argv
+    outputFile = "/ProducedData/Multistops/" + inputFile[(inputFile.index(".")+1):]
+    if (debug == True):
+        print("I: " + inputFile)
+        print("O: " + outputFile)
+    data = pd.read_csv(inputFile, names = ['Timestamp','LineID','Direction','JourneyPatternID','TimeFrame','VehicleJourneyID','Operator','Congestion','Long','Lat','Delay','BlockID ','VehicleID','StopID','AtStop'], dtype = {'LineID': 'str'})
+    if(debug == True):
+	    print("Read Data")
+        # data = data.head(500)
+    mgr = Manager()
+    ns = mgr.Namespace()
+    return_dict = mgr.dict()
+    # ns.df = data
+    stretchLength = 3
+    numThreads = 50
+    if(debug == True):
+        numThreads = 5
+    vehicles = data.VehicleID.unique()
+    numVehicles = len(vehicles)
+    vehiclesPerThread = math.ceil(numVehicles / numThreads)
+    startIndex = 0
+    endIndex = vehiclesPerThread
+    jobs = []
+    if(debug == True):
+	    print("Finished Preprocess")
+    for s in range(numThreads):
+        if(debug == True):
+	        print("Creating proc: " + str(s))
+        proc = multiprocessing.Process(target = findJourneyTimes, args = (s, data, vehicles[startIndex:min(endIndex, numVehicles)]))
+        jobs.append(proc)
+        proc.start()
+        startIndex = endIndex
+        endIndex = endIndex + vehiclesPerThread
+
+    for j in jobs:
+        j.join()
+        print("Joined Thread:" + j)
+    outputData = pd.DataFrame()
+
+    for val in return_dict.values():
+        outputData = outputData.append(val, ignore_index = True)
+
+    outputData.to_csv(outputFile)
+
+    
 def findJourneyTimes(procnum, data, vehicles):
     stopsDF = pd.DataFrame(columns = ['JourneyID','Route', 'StartTime', 'EndTime', 'Duration'])
     if(debug == True):
@@ -41,66 +101,6 @@ def testFunc(data, v):
     print(data.shape[0])
     print(v)
 
-def main(argv):
-    # #Timestamp micro since 1970 01 01 00:00:00 GMT',
-    # 'Line ID',
-    # 'Direction',
-    # 'Journey Pattern ID',
-    # 'Time Frame (The start date of the production time table - in Dublin the production time table starts at 6am and ends at 3am),
-    # 'Vehicle Journey ID (A given run on the journey pattern)'Operator (Bus operator, not the driver),
-    # 'Congestion [0=no,1=yes]',
-    # 'Lon WGS84',
-    # 'Lat WGS84',
-    # 'Delay (seconds, negative if bus is ahead of schedule),
-    # 'Block ID (a section ID of the journey pattern),
-    # 'Vehicle ID',
-    # 'Stop ID',
-    # 'At Stop [0=no,1=yes]
-    inputFile = argv
-    outputFile = "/ProducedData/Multistops/" + inputFile[(inputFile.index(".")+1):]
-    if (debug == True):
-        print("I: " + inputFile)
-        print("O: " + outputFile)
-    data = pd.read_csv(inputFile, names = ['Timestamp','LineID','Direction','JourneyPatternID','TimeFrame','VehicleJourneyID','Operator','Congestion','Long','Lat','Delay','BlockID ','VehicleID','StopID','AtStop'], dtype = {'LineID': 'str'})
-    if(debug == True):
-	    print("Read Data")
-        data = data.head(500)
-    # In[11]:
-    mgr = Manager()
-    ns = mgr.Namespace()
-    return_dict = mgr.dict()
-    # ns.df = data
-    stretchLength = 3
-    numThreads = 50
-    if(debug == True):
-        numThreads = 5
-    vehicles = data.VehicleID.unique()
-    numVehicles = len(vehicles)
-    vehiclesPerThread = math.ceil(numVehicles / numThreads)
-    startIndex = 0
-    endIndex = vehiclesPerThread
-    jobs = []
-    if(debug == True):
-	    print("Finished Preprocess")
-    for s in range(numThreads):
-        if(debug == True):
-	        print("Creating proc: " + str(s))
-        proc = multiprocessing.Process(target = findJourneyTimes, args = (s, data, vehicles[startIndex:min(endIndex, numVehicles)]))
-        jobs.append(proc)
-        proc.start()
-        startIndex = endIndex
-        endIndex = endIndex + vehiclesPerThread
-
-    for j in jobs:
-        j.join()
-    if(debug == True):
-	    print("Joined Threads")
-    outputData = pd.DataFrame()
-
-    for val in return_dict.values():
-        outputData = outputData.append(val, ignore_index = True)
-
-    outputData.to_csv(outputFile)
         # p = Pool(processes=numThreads)
         # ret = p.map(findJourneyTimes, data, [i for i in subVehicles])
         # p.close()
