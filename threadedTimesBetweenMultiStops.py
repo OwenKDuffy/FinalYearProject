@@ -4,7 +4,7 @@ import multiprocessing
 from multiprocessing import Pool, Manager
 import math
 import sys
-debug = True
+debug = False
 # In[9]:
 def main(argv):
     # #Timestamp micro since 1970 01 01 00:00:00 GMT',
