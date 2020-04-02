@@ -4,7 +4,7 @@ import multiprocessing
 from multiprocessing import Pool, Manager
 import math
 import sys
-debug = False
+debug = True
 # In[9]:
 def main(argv):
     # #Timestamp micro since 1970 01 01 00:00:00 GMT',
@@ -22,7 +22,7 @@ def main(argv):
     # 'Stop ID',
     # 'At Stop [0=no,1=yes]
     inputFile = argv
-    outputFile = "/ProducedData/Multistops/" + inputFile[(inputFile.index(".")+1):]
+    outputFile = "./ProducedData/Multistops/" + inputFile[(inputFile.index(".")+1):]
     if (debug == True):
         print("I: " + inputFile)
         print("O: " + outputFile)
@@ -37,6 +37,7 @@ def main(argv):
     stretchLength = 3
     numThreads = 50
     if(debug == True):
+        data = data.head(500)
         numThreads = 5
     vehicles = data.VehicleID.unique()
     numVehicles = len(vehicles)
@@ -49,7 +50,7 @@ def main(argv):
     for s in range(numThreads):
         if(debug == True):
 	        print("Creating proc: " + str(s))
-        proc = multiprocessing.Process(target = findJourneyTimes, args = (s, data, vehicles[startIndex:min(endIndex, numVehicles)]))
+        proc = multiprocessing.Process(target = findJourneyTimes, args = (s, return_dict, data, vehicles[startIndex:min(endIndex, numVehicles)]))
         jobs.append(proc)
         proc.start()
         startIndex = endIndex
@@ -57,7 +58,7 @@ def main(argv):
 
     for j in jobs:
         j.join()
-        print("Joined Thread:" + j)
+        print("Joined Thread:" + str(j))
     outputData = pd.DataFrame()
 
     for val in return_dict.values():
@@ -65,14 +66,14 @@ def main(argv):
 
     outputData.to_csv(outputFile)
 
-    
-def findJourneyTimes(procnum, data, vehicles):
+
+def findJourneyTimes(procnum, return_dict, data, vehicles):
     stopsDF = pd.DataFrame(columns = ['JourneyID','Route', 'StartTime', 'EndTime', 'Duration'])
     if(debug == True):
 	    print(vehicles)
     for v in vehicles:
-        if(debug == True):
-	        print("Starting Vehicle: " + str(v))
+        # if(debug == True):
+	    #     print("Starting Vehicle: " + str(v))
         pings = data[data.VehicleID == v]
         output = pings[['LineID', 'Direction', 'JourneyPatternID', 'VehicleJourneyID', 'StopID', 'AtStop', 'Timestamp']].copy()
         output['TimeF'] = pings.Timestamp.apply(lambda x: datetime.utcfromtimestamp(x/1000000).strftime('%Y-%m-%d %H:%M:%S'))
