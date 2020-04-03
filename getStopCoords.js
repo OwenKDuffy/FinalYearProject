@@ -22,6 +22,6 @@ var stops = dublinBusClient.busStop.getAllInformation()
       // let csvContent = "data:text/csv;charset=utf-8," + outputArray.map(e => e.join(",")).join("\n");
       // console.log(outputArray)
       const csv = new ObjectsToCsv(outputArray);
-      await csv.toDisk('./StopsCoordsJS.csv')
+      await csv.toDisk('./ProducedData/StopsCoordsJS.csv')
   })
   .catch(console.error);

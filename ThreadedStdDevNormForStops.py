@@ -3,10 +3,12 @@ import pandas as pd
 import multiprocessing
 from multiprocessing import Pool, Manager
 import math
+debug = False
+pd.options.mode.chained_assignment = None  # default='warn'
 
-def main(argv)
+def main(argv):
     inputFile = argv
-    outputFile = "./ProducedData/Multistops/Normalised" + inputFile
+    outputFile = "./ProducedData/Pairstops/Normalised" + inputFile[(len(inputFile) - 1 - (inputFile[::-1].index("/"))):]
     if (debug == True):
         print("I: " + inputFile)
         print("O: " + outputFile)
@@ -27,7 +29,7 @@ def main(argv)
     for s in range(numThreads):
         if(debug == True):
 	        print("Creating proc: " + str(s))
-        proc = multiprocessing.Process(target = findJourneyTimes, args = (s, return_dict, data[data.FromStop.isin(stops[startIndex:min(endIndex, numStops)])])
+        proc = multiprocessing.Process(target = normaliseSlice, args = (s, return_dict, data[data.FromStop.isin(stops[startIndex:min(endIndex, numStops)])]))
         jobs.append(proc)
         proc.start()
         startIndex = endIndex

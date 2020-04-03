@@ -1,9 +1,9 @@
 import os
 import pandas as pd
-import threadedStdDevNormForStops as script
+import threadedStdDevNormForMultiStops as script
 
 def main():
-    directory_in_str = os.getcwd() + '/ProducedData/Pairstops'
+    directory_in_str = os.getcwd() + '/ProducedData/Multistops'
     print(directory_in_str)
     directory = os.fsencode(directory_in_str)
     directory = os.listdir(directory)
