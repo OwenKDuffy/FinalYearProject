@@ -4,7 +4,7 @@ import numpy as np
 import sys
 
 def main(inputFile):
-    df_stops = pd.read_csv('./ProducedData/StopsCoordsJS.csv')
+    df_stops = pd.read_csv('StopsCoordsJS.csv')
     # print(df_stops.head())
 
     df_journeys = pd.read_csv(inputFile)

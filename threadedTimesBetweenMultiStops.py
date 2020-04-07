@@ -31,7 +31,6 @@ def main(argv):
 	    print("Read Data")
         # data = data.head(500)
     mgr = Manager()
-    ns = mgr.Namespace()
     return_dict = mgr.dict()
     # ns.df = data
     stretchLength = 3

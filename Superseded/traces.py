@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 
-df_stops = pd.read_csv('stopCoords.csv')
+df_stops = pd.read_csv('StopsCoordsJS.csv')
 # print(df_stops.head())
 
 df_journeys = pd.read_csv('variabilityBetweenStops.csv')
