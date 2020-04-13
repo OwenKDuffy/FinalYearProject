@@ -42,7 +42,7 @@ def main(folder):
                    xaxis_title = "Day")
 
 
-    meansData = pd.read_csv("MeansByDay.csv", usecols = {"Day", "Date", "NormalisedMean"})
+    meansData = pd.read_csv("./ProducedData/MeansByDay.csv", usecols = {"Day", "Date", "NormalisedMean"})
     graphData = {}
     # print(meansData.Date.unique())
     dates = meansData.Date.unique()

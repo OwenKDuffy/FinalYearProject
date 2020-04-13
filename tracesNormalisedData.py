@@ -67,7 +67,20 @@ def main(inputFile):
             line={'color': colours[j]},
             name = str(traceName[0]  + "->" + traceName[1])))
 
-    fig.update_layout(
+    fig.update_layout(legend = dict(
+            title = str('Most Variable Journeys ' + inputFile[-6:-4] + "/" + inputFile[-8:-6]),
+            x = 0,
+            y=1,
+            traceorder="normal",
+            font=dict(
+                family="sans-serif",
+                size=12,
+                color="black"
+            ),
+            bgcolor="LightSteelBlue",
+            bordercolor="Black",
+            borderwidth=2
+        ),
         margin ={'l':0,'t':0,'b':0,'r':0},
         mapbox = {
             'style': "stamen-terrain",

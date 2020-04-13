@@ -41,6 +41,7 @@ def main(folder):
     for file in directory:
         dataset = folder + '/' + file.decode("utf-8")
         print(dataset)
+        # TODO: Make usable for Pairstops
         data = pd.read_csv(dataset, usecols = ["Stop1", "Stop2", "Stop3", "MeanTime"])
         data["Day"] = days[file.decode("utf-8")[-12:]]
         data["Date"] = file.decode("utf-8")[-12:-4]
