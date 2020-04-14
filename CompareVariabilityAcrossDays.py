@@ -16,7 +16,7 @@ def main(folder):
         # #print(file)
         dataset = folder + '/' + file.decode("utf-8")
         data = pd.read_csv(dataset)
-        # data = data[data["NumJourneys"] >= 2]
+        data = data[data["NumJourneys"] >= 2]
         variabilities[file.decode("utf-8")] = data.StdDev.mean()
 
     #print(list(variabilities.keys()))
