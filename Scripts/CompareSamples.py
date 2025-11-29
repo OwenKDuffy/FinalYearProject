@@ -1,148 +1,176 @@
+"""Compares two datasets"""
+import sys
 import plotly.graph_objects as go
 import pandas as pd
-import numpy as np
-import sys
+
 
 def main(dataset1, dataset2):
-    df_stops = pd.read_csv('./ProducedData/StopsCoordsJS.csv', dtype = {'StopID': 'int32'})
+    """Compares two datasets"""
+    df_stops = pd.read_csv(
+        "./Produced_data/Stops_coordsJS.csv", dtype={"StopID": "int32"}
+    )
     # print(df_stops.head())
 
-    df_1 = pd.read_csv(dataset1) #, dtype = {'Stop1': 'int32', 'Stop2': 'int32', 'Stop3': 'int32'})
-    df_2 = pd.read_csv(dataset2) #, dtype = {'Stop1': 'int32', 'Stop2': 'int32'})
-    df_1 = df_1.sort_values("StdDev", ascending = False)
-    df_2 = df_2.sort_values("StdDev", ascending = False)
-    maxStdDevdf_1 = df_1["StdDev"].max()
-    minStdDevdf_1 = df_1["StdDev"].min()
-    maxStdDevdf_2 = df_2["StdDev"].max()
-    minStdDevdf_2 = df_2["StdDev"].min()
+    df_1 = pd.read_csv(
+        dataset1
+    )  # , dtype = {'Stop1': 'int32', 'Stop2': 'int32', 'Stop3': 'int32'})
+    df_2 = pd.read_csv(dataset2)  # , dtype = {'Stop1': 'int32', 'Stop2': 'int32'})
+    df_1 = df_1.sort_values("Std_dev", ascending=False)
+    df_2 = df_2.sort_values("Std_dev", ascending=False)
+    max_std_dev_df2 = df_2["Std_dev"].max()
+    min_std_dev_df2 = df_2["Std_dev"].min()
     df_2 = df_2.head(10)
     df_1 = df_1.head(10)
 
     # print(df_2)
 
-    stopsLongs = []
-    stopsLats = []
+    stops_longs = []
+    stops_lats = []
     names = []
     colours = []
     for i in range(df_2.shape[0]):
-        startStop = df_2["Stop1"][i]
-        startStopCoords = df_stops[df_stops["StopID"] == startStop]
-        midStop = None
+        start_stop = df_2["Stop1"][i]
+        start_stop_coords = df_stops[df_stops["StopID"] == start_stop]
+        mid_stop = None
         if "Stop3" in df_2.columns:
-            midStop = df_2["Stop2"][i]
-            midStopCoords = df_stops[df_stops["StopID"] == midStop]
-            endStop = df_2["Stop3"][i]
+            mid_stop = df_2["Stop2"][i]
+            mid_stop_coords = df_stops[df_stops["StopID"] == mid_stop]
+            end_stop = df_2["Stop3"][i]
         else:
-            endStop = df_2["Stop2"][i]
-        endStopCoords = df_stops[df_stops["StopID"] == endStop]
-        if(startStopCoords.shape[0] != 0 and endStopCoords.shape[0] != 0):
-            # print(str(startStop) + "->" + str(endStop))
-            stopsLongs.append([startStopCoords.iloc[0].Longitude, endStopCoords.iloc[0].Longitude])
-            stopsLats.append([startStopCoords.iloc[0].Latitude, endStopCoords.iloc[0].Latitude])
-            thisName = [str(int(startStop))]
-            if midStop is not None:
-                thisName.append(str(int(midStop)))
-            thisName.append(str(int(endStop)))
-            names.append(thisName)
-            #myColor = new Color(2.0f * x, 2.0f * (1 - x), 0);
-            colourValuesMapped = ((df_2["StdDev"][i] - minStdDevdf_2)/ (maxStdDevdf_2 - minStdDevdf_2)) * 255
-            red = min(255, 2 * colourValuesMapped)
-            green = min(255, 2 * (255 - colourValuesMapped))
+            end_stop = df_2["Stop2"][i]
+        end_stop_coords = df_stops[df_stops["StopID"] == end_stop]
+        if start_stop_coords.shape[0] != 0 and end_stop_coords.shape[0] != 0:
+            # print(str(start_stop) + "->" + str(end_stop))
+            stops_longs.append(
+                [start_stop_coords.iloc[0].Longitude, end_stop_coords.iloc[0].Longitude]
+            )
+            stops_lats.append(
+                [start_stop_coords.iloc[0].Latitude, end_stop_coords.iloc[0].Latitude]
+            )
+            this_name = [str(int(start_stop))]
+            if mid_stop is not None:
+                this_name.append(str(int(mid_stop)))
+            this_name.append(str(int(end_stop)))
+            names.append(this_name)
+            # my_color = new Color(2.0f * x, 2.0f * (1 - x), 0);
+            colour_values_mapped = (
+                (df_2["Std_dev"][i] - min_std_dev_df2) / (max_std_dev_df2 - min_std_dev_df2)
+            ) * 255
+            red = min(255, 2 * colour_values_mapped)
+            green = min(255, 2 * (255 - colour_values_mapped))
             colours.append(str("rgb(" + str(int(red)) + "," + str(green) + ",0)"))
         else:
-            print("StartStop: " + str(startStop) + "Coords: " + str(startStopCoords))
-            print("endStop: " + str(endStop) + "Coords: " + str(endStopCoords))
+            print("Start_stop: " + str(start_stop) + "Coords: " + str(start_stop_coords))
+            print("end_stop: " + str(end_stop) + "Coords: " + str(end_stop_coords))
 
-    #
-    # print(stopsLongs[0])
-    # print(stopsLats[0])
-    # print(stopsLongs[1])
-    # print(stopsLats[1])
-    # print(colourName)
-    fig = go.Figure(go.Scattermapbox(
-        mode = "markers+lines",
-        lon = stopsLongs[0],
-        lat = stopsLats[0],
-        marker = {'size': 10},
-        text = names[0],
-        hoverinfo = 'text',
-        line={'color': "blue"},
-        name = str(names[0][0]  + "->" + names[0][1])))
+    fig = go.Figure(
+        go.Scattermapbox(
+            mode="markers+lines",
+            lon=stops_longs[0],
+            lat=stops_lats[0],
+            marker={"size": 10},
+            text=names[0],
+            hoverinfo="text",
+            line={"color": "blue"},
+            name=str(names[0][0] + "->" + names[0][1]),
+        )
+    )
 
-    for j in range(1, len(stopsLongs)):
-        lo = stopsLongs[j]
-        la = stopsLats[j]
-        traceName = names[j]
-        fig.add_trace(go.Scattermapbox(
-            mode = "markers+lines",
-            lon = lo,
-            lat = la,
-            marker = dict(
-                size = 10
-                ),
-            text = traceName,
-            hoverinfo = 'text',
-            line={'color': "blue"},
-            name = str(traceName[0] + "->" + traceName[1])))
+    for j in range(1, len(stops_longs)):
+        lo = stops_longs[j]
+        la = stops_lats[j]
+        trace_name = names[j]
+        fig.add_trace(
+            go.Scattermapbox(
+                mode="markers+lines",
+                lon=lo,
+                lat=la,
+                marker={"size":10},
+                text=trace_name,
+                hoverinfo="text",
+                line={"color": "blue"},
+                name=str(trace_name[0] + "->" + trace_name[1]),
+            )
+        )
 
-    stopsLongs = []
-    stopsLats = []
+    stops_longs = []
+    stops_lats = []
     names = []
     colours = []
     for i in range(df_1.shape[0]):
-        startStop = df_1["Stop1"][i]
-        startStopCoords = df_stops[df_stops["StopID"] == startStop]
-        midStop = None
+        start_stop = df_1["Stop1"][i]
+        start_stop_coords = df_stops[df_stops["StopID"] == start_stop]
+        mid_stop_coords = []
+        mid_stop = []
         if "Stop3" in df_1.columns:
-            midStop = df_1["Stop2"][i]
-            midStopCoords = df_stops[df_stops["StopID"] == midStop]
-            endStop = df_1["Stop3"][i]
+            mid_stop = df_1["Stop2"][i]
+            mid_stop_coords = df_stops[df_stops["StopID"] == mid_stop]
+            end_stop = df_1["Stop3"][i]
         else:
-            endStop = df_1["Stop2"][i]
-        endStopCoords = df_stops[df_stops["StopID"] == endStop]
-        if(startStopCoords.shape[0] != 0 and midStopCoords.shape[0] != 0 and endStopCoords.shape[0] != 0):
-            # print(str(startStop) + "->" + str(midStop) + "->" + str(endStop))
-            stopsLongs.append([startStopCoords.iloc[0].Longitude, midStopCoords.iloc[0].Longitude, endStopCoords.iloc[0].Longitude])
-            stopsLats.append([startStopCoords.iloc[0].Latitude, midStopCoords.iloc[0].Latitude, endStopCoords.iloc[0].Latitude])
-            thisName = [str(int(startStop))]
-            if midStop is not None:
-                thisName.append(str(int(midStop)))
-            thisName.append(str(int(endStop)))
-            names.append(thisName)
-            #myColor = new Color(2.0f * x, 2.0f * (1 - x), 0);
-            colourValuesMapped = ((df_1["StdDev"][i] - minStdDevdf_2)/ (maxStdDevdf_2 - minStdDevdf_2)) * 255
-            red = min(255, 2 * colourValuesMapped)
-            green = min(255, 2 * (255 - colourValuesMapped))
+            end_stop = df_1["Stop2"][i]
+        end_stop_coords = df_stops[df_stops["StopID"] == end_stop]
+        if (
+            start_stop_coords.shape[0] != 0
+            and (mid_stop_coords.shape[0] != 0)
+            and end_stop_coords.shape[0] != 0
+        ):
+            stops_longs.append(
+                [
+                    start_stop_coords.iloc[0].Longitude,
+                    mid_stop_coords.iloc[0].Longitude,
+                    end_stop_coords.iloc[0].Longitude,
+                ]
+            )
+            stops_lats.append(
+                [
+                    start_stop_coords.iloc[0].Latitude,
+                    mid_stop_coords.iloc[0].Latitude,
+                    end_stop_coords.iloc[0].Latitude,
+                ]
+            )
+            this_name = [str(int(start_stop))]
+            if mid_stop is not None:
+                this_name.append(str(int(mid_stop)))
+            this_name.append(str(int(end_stop)))
+            names.append(this_name)
+            colour_values_mapped = (
+                (df_1["Std_dev"][i] - min_std_dev_df2) / (max_std_dev_df2 - min_std_dev_df2)
+            ) * 255
+            red = min(255, 2 * colour_values_mapped)
+            green = min(255, 2 * (255 - colour_values_mapped))
             colours.append(str("rgb(" + str(int(red)) + "," + str(green) + ",0)"))
         else:
-            print("StartStop: " + str(startStop) + "Coords: " + str(startStopCoords))
-            print("midStop: " + str(midStop) + "Coords: " + str(midStopCoords))
-            print("endStop: " + str(endStop) + "Coords: " + str(endStopCoords))
+            print("Start_stop: " + str(start_stop) + "Coords: " + str(start_stop_coords))
+            print("mid_stop: " + str(mid_stop) + "Coords: " + str(mid_stop_coords))
+            print("end_stop: " + str(end_stop) + "Coords: " + str(end_stop_coords))
 
-    for i in range(0, len(stopsLongs)):
-        lo = stopsLongs[i]
-        la = stopsLats[i]
-        traceName = names[i]
-        fig.add_trace(go.Scattermapbox(
-            mode = "markers+lines",
-            lon = lo,
-            lat = la,
-            marker = dict(
-                size = 10
-                ),
-            text = traceName,
-            hoverinfo = 'text',
-            line={'color': "red"},
-            name = str(traceName[0]  + "->" + traceName[1] + "->" + traceName[2])))
+    for i in enumerate(stops_longs):
+        lo = stops_longs[i]
+        la = stops_lats[i]
+        trace_name = names[i]
+        fig.add_trace(
+            go.Scattermapbox(
+                mode="markers+lines",
+                lon=lo,
+                lat=la,
+                marker=dict(size=10),
+                text=trace_name,
+                hoverinfo="text",
+                line={"color": "red"},
+                name=str(trace_name[0] + "->" + trace_name[1] + "->" + trace_name[2]),
+            )
+        )
 
     fig.update_layout(
-        margin ={'l':0,'t':0,'b':0,'r':0},
-        mapbox = {
-            'style': "stamen-terrain",
-            'center': {'lon': -6.2, 'lat': 53.34},
-            'zoom': 10})
+        margin={"l": 0, "t": 0, "b": 0, "r": 0},
+        mapbox={
+            "style": "stamen-terrain",
+            "center": {"lon": -6.2, "lat": 53.34},
+            "zoom": 10,
+        },
+    )
 
     fig.show()
 
-if __name__ == '__main__':
-    main(sys.argv[1],sys.argv[2])
+if __name__ == "__main__":
+    main(sys.argv[1], sys.argv[2])

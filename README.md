@@ -16,7 +16,7 @@ title: Data and Process Flow
 ---
 graph LR
 
-./ProducedData/MeansByDay.csv --> plotMeansByDays.py --> display
+?.csv & DaysofWeek.csv --> CompareMeanAcrossDays.py --> ./ProducedData/MeansByDay.csv --> plotMeansByDays.py --> display
 StopsCoords.csv & variabilityBetweenStops.csv --> plotStopsLinesHighestVariability.py --> display
 subgraph Datasets
     siri.*.csv
@@ -39,4 +39,13 @@ Datasets --> threadedTimesBetweenMultiStops.py --> ./ProducedData/MultiStops/*
 StopsCoords.csv & variabilityBetweenMultiStopsNormalised.csv--> multiTracesNormalisedData.py --> display
 
 StopsCoords.csv & ./ProducedData/Multistops/Normalised/* & ./ProducedData/Pairstops/Normalised/* --> CompareMultisToSingles.py --> display
+```
+
+```mermaid
+---
+title: Scripts hierarchy and call chains
+---
+graph TD
+EntireDataSetMultiStops.py -->|Calls for each file in dataset sequentially|threadedTimesBetweenMultiStops
+
 ```
