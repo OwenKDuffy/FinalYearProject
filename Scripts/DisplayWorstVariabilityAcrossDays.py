@@ -6,8 +6,8 @@ import plotly.graph_objects as go
 def main(folder):
     # directory_in_str = os.getcwd() + '/Datasets'
     # #print(folder)
-    days = pd.read_csv("DaysofWeek.csv", index_col=0, squeeze=True, header = None).to_dict()
-    df_stops = pd.read_csv('StopsCoordsJS.csv')
+    # days = pd.read_csv("DaysofWeek.csv", index_col=0, squeeze=True, header = None).to_dict()
+    df_stops = pd.read_csv('./ProducedData/StopsCoordsJS.csv')
     directory = os.fsencode(folder)
     directory = os.listdir(directory)
     # #print(directory[0])
